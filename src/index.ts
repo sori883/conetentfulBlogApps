@@ -4,7 +4,7 @@ import { createClient } from 'contentful-management';
 import { Probot } from "probot";
 import { loadFront } from 'yaml-front-matter';
 
-import { createLinkObject } from './lib/createLinkObject';
+import { createLinkObject } from './utils/createLinkObject';
 import { Meta, Tag } from './types/md';
 
 export = (app: Probot) => {

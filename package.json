@@ -14,7 +14,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --exec \"npm run start\"",
-    "start": "probot run ./lib/index.js",
+    "dev:start": "tsc && probot run ./lib/index.js",
+    "start": "tsc && probot run ./lib/index.js",
     "codegen": "graphql-codegen --config codegen.yml",
     "gfunction": "functions-framework --target=main",
     "test": "jest"
