@@ -141,7 +141,7 @@ export = (app: Probot) => {
           });
       
           const publishedEntry = await draftEntry.publish();
-          console.log(`${publishedEntry.sys.id} をパブリッシュしました。`);
+          console.log(`POST:${publishedEntry.sys.id} を更新しました。`);
 
           return ({
             id: publishedEntry.sys.id,
@@ -170,8 +170,8 @@ export = (app: Probot) => {
         });
     
         if (mdMeta.published) {
-          const publishedEntry = await draftEntry.publish();
-          console.log(`${publishedEntry.sys.id} をパブリッシュしました。`);
+          const pubent = await draftEntry.publish();
+          console.log(`POST:${pubent.sys.id} を作成しました。`);
         }
       })();
     });
@@ -233,7 +233,7 @@ export = (app: Probot) => {
           });
       
           const publishedEntry = await draftEntry.publish();
-          console.log(`${publishedEntry.sys.id} をパブリッシュしました。`);
+          console.log(`TAG:${publishedEntry.sys.id} を作成しました。`);
 
           return ({
             id: publishedEntry.sys.id,
@@ -250,8 +250,8 @@ export = (app: Probot) => {
         updateEntryPost.update();
 
         if (mdMeta.published) {
-          const publishedEntry = await updateEntryPost.publish();
-          console.log(`${publishedEntry.sys.id} をパブリッシュしました。`);
+          const pubent = await updateEntryPost.publish();
+          console.log(`POST:${pubent.sys.id} を更新しました`);
         }
 
       })();
