@@ -244,13 +244,13 @@ export = (app: Probot) => {
         const EntryTags = [...existTags, ...addTagRes];
 
         // 更新作業
-        updateEntryPost.fields.title['en-US'] = mdMeta.title;
-        updateEntryPost.fields.content['en-US'] = mdMeta.entry;
-        updateEntryPost.fields.tags['en-US'] = createLinkObject(EntryTags);
-        updateEntryPost.update();
+        updateEntryPost.fields.title = { 'en-US': mdMeta.title };
+        updateEntryPost.fields.content = { 'en-US': mdMeta.entry };
+        updateEntryPost.fields.tags = { 'en-US': createLinkObject(EntryTags) };
+        const resUpdate =  await updateEntryPost.update();
 
         if (mdMeta.published) {
-          const pubent = await updateEntryPost.publish();
+          const pubent = await resUpdate.publish();
           console.log(`POST:${pubent.sys.id} を更新しました`);
         }
 
