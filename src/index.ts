@@ -6,6 +6,7 @@ import { loadFront } from 'yaml-front-matter';
 
 import { createLinkObject } from './utils/createLinkObject';
 import { Meta, Tag } from './types/md';
+import { isAllowedImage } from './types/isImage';
 
 export = (app: Probot) => {
 
@@ -14,7 +15,6 @@ export = (app: Probot) => {
   });
 
   app.on("push", async (context) => {
-
     const owner = context.payload.repository.owner.name;
     const repo = context.payload.repository.name;
 
@@ -25,17 +25,31 @@ export = (app: Probot) => {
     const addFilePaths = commits.map((item) => item.added).flat();
     const modFilePaths = commits.map((item) => item.modified).flat();
 
-    // mdのファイルたちを取得する
-    const mdlistAdds = [...addFilePaths].filter((item) => item.split('.').pop() === 'md');
-    // mdじゃないファイルを取得する
-    const imagelistAdds = [...addFilePaths].filter((item) => item.split('.').pop() !== 'md');
-    // mdのファイルたちを取得する
-    const mdlistMods = [...modFilePaths ].filter((item) => item.split('.').pop() === 'md');
-    // mdじゃないファイルを取得する
-    const imagelistMods = [...modFilePaths ].filter((item) => item.split('.').pop() !== 'md');
+    // 追加:mdのファイルたちを取得する
+    const tmpMdlistAdds = [...addFilePaths].filter((item) => item.split('.').pop() === 'md');
+    // 追加:mdじゃないファイルを取得する
+    const tmpImagelistAdds = [...addFilePaths].filter((item) => item.split('.').pop() !== 'md' && isAllowedImage(String(item.split('.').pop())));
+    // 更新:mdのファイルたちを取得する
+    const tmpMdlistMods = [...modFilePaths ].filter((item) => item.split('.').pop() === 'md');
+    // 更新:mdじゃないファイルを取得する
+    const tmpImagelistMods = [...modFilePaths ].filter((item) => item.split('.').pop() !== 'md' && isAllowedImage(String(item.split('.').pop())));
 
+    // articlesフォルダ配下のみ取得する
+    const mdlistAdds = tmpMdlistAdds.filter((item) => item.startsWith('articles/'))
+    const imagelistAdds = tmpImagelistAdds.filter((item) => item.startsWith('images/'))
+    const mdlistMods = tmpMdlistMods.filter((item) => item.startsWith('articles/'))
+    const imagelistMods = tmpImagelistMods.filter((item) => item.startsWith('images/'))
     
-    // 画像取得(全部)
+    console.log(tmpImagelistAdds)
+    console.log(tmpImagelistAdds)
+    console.log(tmpImagelistAdds)
+    console.log(tmpImagelistAdds)
+    console.log(mdlistAdds)
+    console.log(imagelistAdds)
+    console.log(mdlistMods)
+    console.log(imagelistMods)
+
+    // 追加:画像取得(全部)
     const imagesAdds = await Promise.all(imagelistAdds.map(async (item) => {
       return await context.octokit.repos.getContent({
         owner: String(owner),
@@ -47,7 +61,7 @@ export = (app: Probot) => {
       }).then(({data}) => data);
     }));
 
-    // 画像追加
+    // 追加:画像アップロード
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     imagesAdds.map(async (item : any) => {
       const image = await axios.get(item.download_url, {responseType: 'arraybuffer'});
@@ -62,7 +76,7 @@ export = (app: Probot) => {
       });
     });
 
-    // 画像取得(全部)
+    // 更新:画像取得(全部)
     const imagesMods = await Promise.all(imagelistMods.map(async (item) => {
       return await context.octokit.repos.getContent({
         owner: String(owner),
@@ -74,7 +88,7 @@ export = (app: Probot) => {
       }).then(({data}) => data);
     }));
 
-    // 画像更新
+    // 更新:画像アップロード
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     imagesMods.map(async (item : any) => {
       const image = await axios.get(item.download_url, {responseType: 'arraybuffer'});
@@ -88,7 +102,7 @@ export = (app: Probot) => {
       });
     });
 
-    // 記事取得(全部)
+    // 追加:記事取得(全部)
     const articleAdds = await Promise.all(mdlistAdds.map(async (item) => {
       return await context.octokit.repos.getContent({
         owner: String(owner),
@@ -100,6 +114,7 @@ export = (app: Probot) => {
       }).then(({data}) => data);
     }));
 
+    // 追加:記事登録
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     articleAdds.map(async (item : any) => {
       const md = Buffer.from(item.content, 'base64').toString();
@@ -176,7 +191,7 @@ export = (app: Probot) => {
       })();
     });
 
-    //記事取得(全部)
+    // 更新:記事取得(全部)
     const articleMods = await Promise.all(mdlistMods.map(async (item) => {
       return await context.octokit.repos.getContent({
         owner: String(owner),
@@ -188,6 +203,7 @@ export = (app: Probot) => {
       }).then(({data}) => data);
     }));
 
+    // 更新:登録
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     articleMods.map(async (item : any) => {
       const md = Buffer.from(item.content, 'base64').toString();
