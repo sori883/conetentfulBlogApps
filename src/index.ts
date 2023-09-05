@@ -39,15 +39,6 @@ export = (app: Probot) => {
     const imagelistAdds = tmpImagelistAdds.filter((item) => item.startsWith('images/'))
     const mdlistMods = tmpMdlistMods.filter((item) => item.startsWith('articles/'))
     const imagelistMods = tmpImagelistMods.filter((item) => item.startsWith('images/'))
-    
-    console.log(tmpImagelistAdds)
-    console.log(tmpImagelistAdds)
-    console.log(tmpImagelistAdds)
-    console.log(tmpImagelistAdds)
-    console.log(mdlistAdds)
-    console.log(imagelistAdds)
-    console.log(mdlistMods)
-    console.log(imagelistMods)
 
     // 追加:画像取得(全部)
     const imagesAdds = await Promise.all(imagelistAdds.map(async (item) => {
